@@ -40,16 +40,16 @@
 - [x] Create auth middleware
 - [ ] Test all auth flows (requires env setup)
 
-#### Task 1.4: Basic UI Shell
+#### Task 1.4: Basic UI Shell ✅
 
-- [ ] Create app layout (sidebar, header)
-- [ ] Create navigation component
-- [ ] Create dashboard page skeleton
-- [ ] Create course page skeleton
-- [ ] Create practice page skeleton
-- [ ] Create profile page skeleton
-- [ ] Setup Zustand store
-- [ ] Add dark/light theme toggle
+- [x] Create app layout (sidebar, header)
+- [x] Create navigation component
+- [x] Create dashboard page skeleton
+- [x] Create course page skeleton
+- [x] Create practice page skeleton
+- [x] Create profile page skeleton
+- [x] Setup Zustand store
+- [ ] Add dark/light theme toggle (future enhancement)
 
 ---
 
@@ -301,7 +301,7 @@
 
 | Phase   | Status         | Completion |
 | ------- | -------------- | ---------- |
-| Phase 1 | 🔄 In Progress | 0%         |
+| Phase 1 | 🔄 In Progress | 40%        |
 | Phase 2 | ⏳ Pending     | 0%         |
 | Phase 3 | ⏳ Pending     | 0%         |
 
@@ -309,4 +309,4 @@
 
 ## Current Focus
 
-**Active Task:** Task 1.4 - Basic UI Shell
+**Active Task:** Task 2.1 - SQL Execution Engine
