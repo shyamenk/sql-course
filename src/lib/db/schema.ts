@@ -7,18 +7,19 @@ import {
   boolean,
   timestamp,
   jsonb,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import type { AdapterAccountType } from 'next-auth/adapters';
 
-// Users table
+// Users table (NextAuth compatible)
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
-  email: varchar('email', { length: 255 }).notNull().unique(),
   name: varchar('name', { length: 255 }),
+  email: varchar('email', { length: 255 }).unique(),
+  emailVerified: timestamp('email_verified', { mode: 'date' }),
+  image: text('image'),
   password: varchar('password', { length: 255 }),
-  avatar: text('avatar'),
-  provider: varchar('provider', { length: 50 }),
-  providerId: varchar('provider_id', { length: 255 }),
   level: integer('level').default(1).notNull(),
   totalPoints: integer('total_points').default(0).notNull(),
   currentStreak: integer('current_streak').default(0).notNull(),
@@ -27,6 +28,47 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+// NextAuth accounts table
+export const accounts = pgTable(
+  'accounts',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    type: varchar('type', { length: 255 }).$type<AdapterAccountType>().notNull(),
+    provider: varchar('provider', { length: 255 }).notNull(),
+    providerAccountId: varchar('provider_account_id', { length: 255 }).notNull(),
+    refresh_token: text('refresh_token'),
+    access_token: text('access_token'),
+    expires_at: integer('expires_at'),
+    token_type: varchar('token_type', { length: 255 }),
+    scope: varchar('scope', { length: 255 }),
+    id_token: text('id_token'),
+    session_state: varchar('session_state', { length: 255 }),
+  },
+  (account) => [primaryKey({ columns: [account.provider, account.providerAccountId] })]
+);
+
+// NextAuth sessions table
+export const sessions = pgTable('sessions', {
+  sessionToken: varchar('session_token', { length: 255 }).primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+});
+
+// NextAuth verification tokens table
+export const verificationTokens = pgTable(
+  'verification_tokens',
+  {
+    identifier: varchar('identifier', { length: 255 }).notNull(),
+    token: varchar('token', { length: 255 }).notNull(),
+    expires: timestamp('expires', { mode: 'date' }).notNull(),
+  },
+  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })]
+);
 
 // Courses table
 export const courses = pgTable('courses', {
