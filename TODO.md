@@ -55,17 +55,17 @@
 
 ### Week 3: SQL Execution Engine & Questions
 
-#### Task 2.1: SQL Execution Engine
+#### Task 2.1: SQL Execution Engine ✅
 
-- [ ] Create user schema isolation logic
-- [ ] Install pg-query-parser for validation
-- [ ] Create query validation middleware
-- [ ] Implement security checks (SELECT only)
-- [ ] Create query execution service
-- [ ] Add timeout handling (10s)
-- [ ] Add row limit (1000)
-- [ ] Create rate limiting (10/min)
-- [ ] Test execution engine
+- [x] Create user schema isolation logic
+- [x] Install pg-query-parser for validation (using pgsql-ast-parser)
+- [x] Create query validation middleware
+- [x] Implement security checks (SELECT only)
+- [x] Create query execution service
+- [x] Add timeout handling (10s)
+- [x] Add row limit (1000)
+- [x] Create rate limiting (10/min)
+- [x] Test execution engine
 
 #### Task 2.2: Question Module
 
@@ -301,7 +301,7 @@
 
 | Phase   | Status         | Completion |
 | ------- | -------------- | ---------- |
-| Phase 1 | 🔄 In Progress | 40%        |
+| Phase 1 | 🔄 In Progress | 50%        |
 | Phase 2 | ⏳ Pending     | 0%         |
 | Phase 3 | ⏳ Pending     | 0%         |
 
