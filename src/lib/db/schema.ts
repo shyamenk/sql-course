@@ -36,9 +36,13 @@ export const accounts = pgTable(
     userId: uuid('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: varchar('type', { length: 255 }).$type<AdapterAccountType>().notNull(),
+    type: varchar('type', { length: 255 })
+      .$type<AdapterAccountType>()
+      .notNull(),
     provider: varchar('provider', { length: 255 }).notNull(),
-    providerAccountId: varchar('provider_account_id', { length: 255 }).notNull(),
+    providerAccountId: varchar('provider_account_id', {
+      length: 255,
+    }).notNull(),
     refresh_token: text('refresh_token'),
     access_token: text('access_token'),
     expires_at: integer('expires_at'),
@@ -47,7 +51,9 @@ export const accounts = pgTable(
     id_token: text('id_token'),
     session_state: varchar('session_state', { length: 255 }),
   },
-  (account) => [primaryKey({ columns: [account.provider, account.providerAccountId] })]
+  (account) => [
+    primaryKey({ columns: [account.provider, account.providerAccountId] }),
+  ]
 );
 
 // NextAuth sessions table
@@ -206,7 +212,9 @@ export const certificates = pgTable('certificates', {
     .notNull(),
   type: varchar('type', { length: 100 }).notNull(),
   title: varchar('title', { length: 255 }).notNull(),
-  verificationId: varchar('verification_id', { length: 100 }).notNull().unique(),
+  verificationId: varchar('verification_id', { length: 100 })
+    .notNull()
+    .unique(),
   fileUrl: text('file_url'),
   issuedAt: timestamp('issued_at').defaultNow().notNull(),
 });
@@ -215,7 +223,9 @@ export const certificates = pgTable('certificates', {
 export const queryLogs = pgTable('query_logs', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
-  questionId: uuid('question_id').references(() => questions.id, { onDelete: 'set null' }),
+  questionId: uuid('question_id').references(() => questions.id, {
+    onDelete: 'set null',
+  }),
   query: text('query').notNull(),
   executionTime: integer('execution_time'),
   rowsReturned: integer('rows_returned'),
@@ -246,16 +256,19 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   progress: many(userLessonProgress),
 }));
 
-export const userLessonProgressRelations = relations(userLessonProgress, ({ one }) => ({
-  user: one(users, {
-    fields: [userLessonProgress.userId],
-    references: [users.id],
-  }),
-  lesson: one(lessons, {
-    fields: [userLessonProgress.lessonId],
-    references: [lessons.id],
-  }),
-}));
+export const userLessonProgressRelations = relations(
+  userLessonProgress,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userLessonProgress.userId],
+      references: [users.id],
+    }),
+    lesson: one(lessons, {
+      fields: [userLessonProgress.lessonId],
+      references: [lessons.id],
+    }),
+  })
+);
 
 export const questionsRelations = relations(questions, ({ many }) => ({
   hints: many(hints),
@@ -270,27 +283,33 @@ export const hintsRelations = relations(hints, ({ one }) => ({
   }),
 }));
 
-export const userQuestionAttemptsRelations = relations(userQuestionAttempts, ({ one }) => ({
-  user: one(users, {
-    fields: [userQuestionAttempts.userId],
-    references: [users.id],
-  }),
-  question: one(questions, {
-    fields: [userQuestionAttempts.questionId],
-    references: [questions.id],
-  }),
-}));
+export const userQuestionAttemptsRelations = relations(
+  userQuestionAttempts,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userQuestionAttempts.userId],
+      references: [users.id],
+    }),
+    question: one(questions, {
+      fields: [userQuestionAttempts.questionId],
+      references: [questions.id],
+    }),
+  })
+);
 
-export const userQuestionCompletionsRelations = relations(userQuestionCompletions, ({ one }) => ({
-  user: one(users, {
-    fields: [userQuestionCompletions.userId],
-    references: [users.id],
-  }),
-  question: one(questions, {
-    fields: [userQuestionCompletions.questionId],
-    references: [questions.id],
-  }),
-}));
+export const userQuestionCompletionsRelations = relations(
+  userQuestionCompletions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userQuestionCompletions.userId],
+      references: [users.id],
+    }),
+    question: one(questions, {
+      fields: [userQuestionCompletions.questionId],
+      references: [questions.id],
+    }),
+  })
+);
 
 export const badgesRelations = relations(badges, ({ many }) => ({
   users: many(userBadges),

@@ -3,58 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Filter } from 'lucide-react';
+import { db } from '@/lib/db';
+import { questions } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { DifficultyBadge, TopicTag } from '@/components/practice';
 
-const mockQuestions = [
-  {
-    slug: 'select-all-customers',
-    title: 'Select All Customers',
-    difficulty: 'beginner',
-    topics: ['select', 'basics'],
-    points: 50,
-    completed: false,
-  },
-  {
-    slug: 'filter-by-city',
-    title: 'Filter by City',
-    difficulty: 'beginner',
-    topics: ['select', 'where'],
-    points: 50,
-    completed: false,
-  },
-  {
-    slug: 'count-total-orders',
-    title: 'Count Total Orders',
-    difficulty: 'beginner',
-    topics: ['aggregate', 'count'],
-    points: 50,
-    completed: false,
-  },
-  {
-    slug: 'basic-inner-join',
-    title: 'Basic INNER JOIN',
-    difficulty: 'intermediate',
-    topics: ['join', 'inner-join'],
-    points: 100,
-    completed: false,
-  },
-  {
-    slug: 'window-row-number',
-    title: 'Window Function - Row Number',
-    difficulty: 'advanced',
-    topics: ['window-functions'],
-    points: 200,
-    completed: false,
-  },
-];
+async function getQuestions() {
+  return db.query.questions.findMany({
+    where: eq(questions.isPublished, true),
+    orderBy: (questions, { asc }) => [asc(questions.order)],
+  });
+}
 
-const difficultyColors: Record<string, string> = {
-  beginner: 'bg-green-100 text-green-800',
-  intermediate: 'bg-yellow-100 text-yellow-800',
-  advanced: 'bg-orange-100 text-orange-800',
-  expert: 'bg-red-100 text-red-800',
-};
+export default async function PracticePage() {
+  const questionsList = await getQuestions();
 
-export default function PracticePage() {
   return (
     <div className="space-y-6">
       <div>
@@ -92,32 +55,30 @@ export default function PracticePage() {
       </div>
 
       <div className="grid gap-4">
-        {mockQuestions.map((question) => (
+        {questionsList.map((question) => (
           <Link key={question.slug} href={`/practice/${question.slug}`}>
             <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs font-medium capitalize ${difficultyColors[question.difficulty]}`}
-                    >
-                      {question.difficulty}
-                    </span>
-                    {question.topics.map((topic) => (
-                      <span key={topic} className="bg-muted rounded px-2 py-1 text-xs">
-                        {topic}
-                      </span>
+                    <DifficultyBadge
+                      difficulty={
+                        question.difficulty as 'beginner' | 'intermediate' | 'advanced' | 'expert'
+                      }
+                    />
+                    {(question.topics as string[] | null)?.map((topic) => (
+                      <TopicTag key={topic} topic={topic} />
                     ))}
                   </div>
-                  <span className="text-muted-foreground text-sm">{question.points} pts</span>
+                  <span className="text-muted-foreground text-sm">
+                    {question.pointsReward} pts
+                  </span>
                 </div>
                 <CardTitle className="mt-2 text-lg">{question.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">
-                    {question.completed ? '✅ Completed' : 'Not started'}
-                  </span>
+                  <span className="text-muted-foreground text-sm">Not started</span>
                   <Button size="sm" variant="ghost">
                     Solve →
                   </Button>

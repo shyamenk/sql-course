@@ -45,7 +45,8 @@ export async function executeQuery(
       await client.query(`SET statement_timeout = ${QUERY_LIMITS.TIMEOUT_MS}`);
 
       if (questionSchemaSetup) {
-        await client.query(`CREATE SCHEMA IF NOT EXISTS "${schemaName}"`);
+        await client.query(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`);
+        await client.query(`CREATE SCHEMA "${schemaName}"`);
         await client.query(`SET search_path TO "${schemaName}", public`);
 
         const statements = questionSchemaSetup

@@ -1,11 +1,7 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { db } from '.';
 import { badges, courses, lessons, questions, hints } from './schema';
 
 async function seed() {
-  const sql = neon(process.env.DATABASE_URL!);
-  const db = drizzle(sql);
-
   console.log('🌱 Seeding database...');
 
   // Seed badges
@@ -85,25 +81,31 @@ async function seed() {
   const courseData = [
     {
       title: 'SQL Foundations',
-      description: 'Master the basics of SQL with SELECT, WHERE, ORDER BY, and aggregate functions',
+      description:
+        'Master the basics of SQL with SELECT, WHERE, ORDER BY, and aggregate functions',
       difficulty: 'beginner',
       order: 1,
     },
     {
       title: 'Mastering JOINs',
-      description: 'Learn to combine data from multiple tables using various JOIN types',
+      description:
+        'Learn to combine data from multiple tables using various JOIN types',
       difficulty: 'intermediate',
       order: 2,
     },
     {
       title: 'Advanced SQL Techniques',
-      description: 'Dive into CTEs, window functions, and complex analytical queries',
+      description:
+        'Dive into CTEs, window functions, and complex analytical queries',
       difficulty: 'advanced',
       order: 3,
     },
   ];
 
-  const insertedCourses = await db.insert(courses).values(courseData).returning();
+  const insertedCourses = await db
+    .insert(courses)
+    .values(courseData)
+    .returning();
   console.log('✅ Courses seeded');
 
   // Seed lessons for first course
@@ -196,7 +198,8 @@ SELECT * FROM users WHERE age > 18;
       title: 'Select All Customers',
       slug: 'select-all-customers',
       difficulty: 'beginner',
-      description: 'Write a query to select all columns from the `customers` table.',
+      description:
+        'Write a query to select all columns from the `customers` table.',
       sampleSchema: `CREATE TABLE customers (
   customer_id INT PRIMARY KEY,
   name VARCHAR(100),
@@ -209,9 +212,24 @@ INSERT INTO customers VALUES
 (2, 'Bob Smith', 'bob@email.com', 'Los Angeles'),
 (3, 'Carol White', 'carol@email.com', 'Chicago');`,
       expectedOutput: JSON.stringify([
-        { customer_id: 1, name: 'Alice Johnson', email: 'alice@email.com', city: 'New York' },
-        { customer_id: 2, name: 'Bob Smith', email: 'bob@email.com', city: 'Los Angeles' },
-        { customer_id: 3, name: 'Carol White', email: 'carol@email.com', city: 'Chicago' },
+        {
+          customer_id: 1,
+          name: 'Alice Johnson',
+          email: 'alice@email.com',
+          city: 'New York',
+        },
+        {
+          customer_id: 2,
+          name: 'Bob Smith',
+          email: 'bob@email.com',
+          city: 'Los Angeles',
+        },
+        {
+          customer_id: 3,
+          name: 'Carol White',
+          email: 'carol@email.com',
+          city: 'Chicago',
+        },
       ]),
       pointsReward: 50,
       order: 1,
@@ -221,7 +239,8 @@ INSERT INTO customers VALUES
       title: 'Filter by City',
       slug: 'filter-by-city',
       difficulty: 'beginner',
-      description: "Write a query to select all customers who live in 'New York'.",
+      description:
+        "Write a query to select all customers who live in 'New York'.",
       sampleSchema: `CREATE TABLE customers (
   customer_id INT PRIMARY KEY,
   name VARCHAR(100),
@@ -234,8 +253,18 @@ INSERT INTO customers VALUES
 (2, 'Bob Smith', 'bob@email.com', 'Los Angeles'),
 (3, 'David Brown', 'david@email.com', 'New York');`,
       expectedOutput: JSON.stringify([
-        { customer_id: 1, name: 'Alice Johnson', email: 'alice@email.com', city: 'New York' },
-        { customer_id: 3, name: 'David Brown', email: 'david@email.com', city: 'New York' },
+        {
+          customer_id: 1,
+          name: 'Alice Johnson',
+          email: 'alice@email.com',
+          city: 'New York',
+        },
+        {
+          customer_id: 3,
+          name: 'David Brown',
+          email: 'david@email.com',
+          city: 'New York',
+        },
       ]),
       pointsReward: 50,
       order: 2,
@@ -245,7 +274,8 @@ INSERT INTO customers VALUES
       title: 'Count Total Orders',
       slug: 'count-total-orders',
       difficulty: 'beginner',
-      description: 'Write a query to count the total number of orders in the `orders` table.',
+      description:
+        'Write a query to count the total number of orders in the `orders` table.',
       sampleSchema: `CREATE TABLE orders (
   order_id INT PRIMARY KEY,
   customer_id INT,
@@ -268,7 +298,8 @@ INSERT INTO orders VALUES
       title: 'Basic INNER JOIN',
       slug: 'basic-inner-join',
       difficulty: 'intermediate',
-      description: 'Write a query to get customer names with their order totals using INNER JOIN.',
+      description:
+        'Write a query to get customer names with their order totals using INNER JOIN.',
       sampleSchema: `CREATE TABLE customers (
   customer_id INT PRIMARY KEY,
   name VARCHAR(100)
@@ -295,7 +326,8 @@ INSERT INTO orders VALUES (1, 1, 100.00), (2, 1, 200.00), (3, 2, 150.00);`,
       title: 'Window Function - Row Number',
       slug: 'window-row-number',
       difficulty: 'advanced',
-      description: 'Use ROW_NUMBER() to assign a sequential number to each order per customer.',
+      description:
+        'Use ROW_NUMBER() to assign a sequential number to each order per customer.',
       sampleSchema: `CREATE TABLE orders (
   order_id INT,
   customer_id INT,
@@ -319,7 +351,10 @@ INSERT INTO orders VALUES
     },
   ];
 
-  const insertedQuestions = await db.insert(questions).values(questionData).returning();
+  const insertedQuestions = await db
+    .insert(questions)
+    .values(questionData)
+    .returning();
   console.log('✅ Questions seeded');
 
   // Seed hints for questions
@@ -327,7 +362,8 @@ INSERT INTO orders VALUES
     {
       questionId: insertedQuestions[0].id,
       level: 1,
-      content: 'Use the SELECT statement with an asterisk (*) to select all columns.',
+      content:
+        'Use the SELECT statement with an asterisk (*) to select all columns.',
       pointsCost: 5,
       order: 1,
     },
@@ -376,14 +412,16 @@ INSERT INTO orders VALUES
     {
       questionId: insertedQuestions[4].id,
       level: 1,
-      content: 'ROW_NUMBER() assigns a unique number to each row within a partition.',
+      content:
+        'ROW_NUMBER() assigns a unique number to each row within a partition.',
       pointsCost: 5,
       order: 1,
     },
     {
       questionId: insertedQuestions[4].id,
       level: 2,
-      content: 'Use PARTITION BY customer_id to restart numbering for each customer.',
+      content:
+        'Use PARTITION BY customer_id to restart numbering for each customer.',
       pointsCost: 15,
       order: 2,
     },
